@@ -62,33 +62,31 @@ public class FPageHolder
     }
 
     /**
-     * 刷新接口请求成功后，更新当前分页
+     * 接口成功触发
      *
-     * @param hasNextPage 是否有下一页，true-是；false-否
-     * @param hasData     接口是否有返回数据
+     * @param isLoadMore
+     * @return
      */
-    public synchronized void onSuccessRefresh(boolean hasNextPage, boolean hasData)
+    public synchronized ResultUpdater onSuccess(boolean isLoadMore)
     {
-        mHasNextPage = hasNextPage;
-
-        if (hasData)
-            mCurrentPage = 1;
-        else
-            mCurrentPage = 0;
+        return new ResultUpdater(isLoadMore);
     }
 
-    /**
-     * 加载更多接口请求成功后，更新当前分页
-     *
-     * @param hasNextPage 是否有下一页，true-是；false-否
-     * @param hasData     接口是否有返回数据
-     */
-    public synchronized void onSuccessLoadMore(boolean hasNextPage, boolean hasData)
+    private synchronized void updatePage(boolean isLoadMore, boolean hasNextPage, boolean hasData)
     {
         mHasNextPage = hasNextPage;
 
-        if (hasData)
-            mCurrentPage++;
+        if (isLoadMore)
+        {
+            if (hasData)
+                mCurrentPage++;
+        } else
+        {
+            if (hasData)
+                mCurrentPage = 1;
+            else
+                mCurrentPage = 0;
+        }
     }
 
     /**
@@ -99,5 +97,56 @@ public class FPageHolder
         mCurrentPage = 0;
         mCurrentCount = 0;
         mHasNextPage = false;
+    }
+
+    public final class ResultUpdater
+    {
+        private final boolean isLoadMore;
+
+        private Boolean hasNextPage = null;
+        private Boolean hasData = null;
+
+        ResultUpdater(boolean isLoadMore)
+        {
+            this.isLoadMore = isLoadMore;
+        }
+
+        /**
+         * 设置是否有下一页
+         *
+         * @param hasNextPage true-是；false-否
+         * @return
+         */
+        public ResultUpdater setHasNextPage(boolean hasNextPage)
+        {
+            this.hasNextPage = hasNextPage;
+            return this;
+        }
+
+        /**
+         * 设置是否有返回数据
+         *
+         * @param hasData true-是；false-否
+         * @return
+         */
+        public ResultUpdater setHasData(boolean hasData)
+        {
+            this.hasData = hasData;
+            return this;
+        }
+
+        /**
+         * 更新page
+         */
+        public void update()
+        {
+            if (hasNextPage == null)
+                throw new RuntimeException("you must invoke setHasNextPage() method before this");
+
+            if (hasData == null)
+                throw new RuntimeException("you must invoke setHasData() method before this");
+
+            updatePage(isLoadMore, hasNextPage, hasData);
+        }
     }
 }
