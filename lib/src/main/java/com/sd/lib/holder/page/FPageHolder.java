@@ -1,5 +1,7 @@
 package com.sd.lib.holder.page;
 
+import java.util.List;
+
 /**
  * 分页逻辑封装
  */
@@ -132,6 +134,19 @@ public class FPageHolder
         public ResultUpdater setHasData(boolean hasData)
         {
             this.hasData = hasData;
+            return this;
+        }
+
+        /**
+         * 设置是否有返回数据
+         *
+         * @param listData
+         * @return
+         */
+        public ResultUpdater setHasData(List<? extends Object> listData)
+        {
+            final boolean has = listData != null && listData.size() > 0;
+            setHasData(has);
             return this;
         }
 
