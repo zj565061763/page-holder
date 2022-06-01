@@ -30,10 +30,24 @@ public class FPageHolder {
      */
     public int getPageForRequest(boolean isLoadMore) {
         if (isLoadMore) {
-            return mCurrentPage + 1;
+            return getPageForLoadMore();
         } else {
-            return 1;
+            return getPageForRefresh();
         }
+    }
+
+    /**
+     * 返回刷新数据需要的page
+     */
+    public int getPageForRefresh() {
+        return 1;
+    }
+
+    /**
+     * 返回下一页数据需要的page
+     */
+    public int getPageForLoadMore() {
+        return mCurrentPage + 1;
     }
 
     /**
