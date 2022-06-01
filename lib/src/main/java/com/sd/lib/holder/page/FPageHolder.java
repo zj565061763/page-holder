@@ -13,7 +13,7 @@ public class FPageHolder {
     /** 是否有下一页数据 */
     private boolean mHasNextPage = false;
 
-    private ResultUpdater mResultUpdater = null;
+    private volatile ResultUpdater mResultUpdater = null;
 
     public FPageHolder() {
         this(1);
@@ -56,6 +56,7 @@ public class FPageHolder {
      * 返回刷新数据需要的page
      */
     public int getPageForRefresh() {
+        checkUpdater();
         return mPageForRefresh;
     }
 
@@ -63,7 +64,14 @@ public class FPageHolder {
      * 返回下一页数据需要的page
      */
     public int getPageForLoadMore() {
+        checkUpdater();
         return mCurrentPage + 1;
+    }
+
+    private void checkUpdater() {
+        if (mResultUpdater != null) {
+            throw new RuntimeException("You should update result before this.");
+        }
     }
 
     /**
