@@ -6,15 +6,21 @@ import java.util.Collection;
  * 分页逻辑封装
  */
 public class FPageHolder {
+    /** 刷新数据需要的page */
     private final int mPageForRefresh;
+    /** 当前的page */
     private volatile int mCurrentPage;
+    /** 是否有下一页数据 */
     private boolean mHasNextPage = false;
+
+    private ResultUpdater mResultUpdater = null;
 
     public FPageHolder() {
         this(1);
     }
 
     public FPageHolder(int pageForRefresh) {
+        assert Integer.MIN_VALUE != pageForRefresh;
         mPageForRefresh = pageForRefresh;
         mCurrentPage = pageForRefresh - 1;
     }
@@ -65,13 +71,33 @@ public class FPageHolder {
      *
      * @param isLoadMore 是否加载更多
      */
-    public ResultUpdater onSuccess(boolean isLoadMore) {
-        return new ResultUpdater(isLoadMore);
+    public synchronized ResultUpdater onSuccess(boolean isLoadMore) {
+        if (mResultUpdater == null) {
+            mResultUpdater = new ResultUpdater();
+        }
+        mResultUpdater._isLoadMore = isLoadMore;
+        return mResultUpdater;
     }
 
-    private synchronized void updatePage(boolean isLoadMore, boolean hasNextPage, boolean hasData) {
-        mHasNextPage = hasNextPage;
+    private synchronized void updatePage(ResultUpdater updater) {
+        if (mResultUpdater == null || mResultUpdater != updater) {
+            throw new RuntimeException("You should call onSuccess() before this.");
+        }
 
+        final Boolean isLoadMore = updater._isLoadMore;
+        assert isLoadMore != null;
+
+        final Boolean hasNextPage = updater._hasNextPage;
+        if (hasNextPage == null) {
+            throw new RuntimeException("You should call ResultUpdater.setHasNextPage() before this.");
+        }
+
+        final Boolean hasData = updater._hasData;
+        if (hasData == null) {
+            throw new RuntimeException("You should call ResultUpdater.setHasData() before this.");
+        }
+
+        mHasNextPage = hasNextPage;
         if (isLoadMore) {
             if (hasData) {
                 mCurrentPage++;
@@ -83,16 +109,15 @@ public class FPageHolder {
                 mCurrentPage = mPageForRefresh - 1;
             }
         }
+
+        // 重置为null
+        mResultUpdater = null;
     }
 
     public final class ResultUpdater {
-        private final boolean _isLoadMore;
+        Boolean _isLoadMore = null;
         private Boolean _hasNextPage = null;
-        private Boolean hasData = null;
-
-        ResultUpdater(boolean isLoadMore) {
-            this._isLoadMore = isLoadMore;
-        }
+        private Boolean _hasData = null;
 
         /**
          * 设置是否有下一页
@@ -110,7 +135,7 @@ public class FPageHolder {
          * @param hasData true-是；false-否
          */
         public ResultUpdater setHasData(boolean hasData) {
-            this.hasData = hasData;
+            this._hasData = hasData;
             return this;
         }
 
@@ -126,13 +151,7 @@ public class FPageHolder {
          * 更新page
          */
         public void update() {
-            if (_hasNextPage == null) {
-                throw new RuntimeException("you must invoke setHasNextPage() method before this");
-            }
-            if (hasData == null) {
-                throw new RuntimeException("you must invoke setHasData() method before this");
-            }
-            updatePage(_isLoadMore, _hasNextPage, hasData);
+            updatePage(this);
         }
     }
 }
