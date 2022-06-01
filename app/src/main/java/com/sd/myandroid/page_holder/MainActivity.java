@@ -21,9 +21,17 @@ public class MainActivity extends AppCompatActivity {
         assert holder.getCurrentPage() == 0;
         assert holder.getPageForRefresh() == 1;
         assert holder.getPageForLoadMore() == 1;
-        assert holder.getPageForRequest(false) == 1;
-        assert holder.getPageForRequest(true) == 1;
         assert !holder.hasNextPage();
+
+        holder.onSuccess(false)
+                .setHasData(false)
+                .setHasNextPage(true)
+                .update();
+
+        assert holder.getCurrentPage() == 0;
+        assert holder.getPageForRefresh() == 1;
+        assert holder.getPageForLoadMore() == 1;
+        assert holder.hasNextPage();
 
         holder.onSuccess(false)
                 .setHasData(true)
@@ -33,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
         assert holder.getCurrentPage() == 1;
         assert holder.getPageForRefresh() == 1;
         assert holder.getPageForLoadMore() == 2;
-        assert holder.getPageForRequest(false) == 1;
-        assert holder.getPageForRequest(true) == 2;
         assert holder.hasNextPage();
+
+
     }
 }

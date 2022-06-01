@@ -40,19 +40,6 @@ public class FPageHolder {
     }
 
     /**
-     * 返回当前请求需要传入的page
-     *
-     * @param isLoadMore 是否加载更多
-     */
-    public int getPageForRequest(boolean isLoadMore) {
-        if (isLoadMore) {
-            return getPageForLoadMore();
-        } else {
-            return getPageForRefresh();
-        }
-    }
-
-    /**
      * 返回刷新数据需要的page
      */
     public int getPageForRefresh() {
