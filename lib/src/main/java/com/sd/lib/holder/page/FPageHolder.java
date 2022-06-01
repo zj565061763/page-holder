@@ -6,8 +6,18 @@ import java.util.Collection;
  * 分页逻辑封装
  */
 public class FPageHolder {
-    private volatile int mCurrentPage = 0;
+    private final int mPageForRefresh;
+    private volatile int mCurrentPage;
     private boolean mHasNextPage = false;
+
+    public FPageHolder() {
+        this(1);
+    }
+
+    public FPageHolder(int pageForRefresh) {
+        mPageForRefresh = pageForRefresh;
+        mCurrentPage = pageForRefresh - 1;
+    }
 
     /**
      * 是否有下一页数据
@@ -40,7 +50,7 @@ public class FPageHolder {
      * 返回刷新数据需要的page
      */
     public int getPageForRefresh() {
-        return 1;
+        return mPageForRefresh;
     }
 
     /**
@@ -68,9 +78,9 @@ public class FPageHolder {
             }
         } else {
             if (hasData) {
-                mCurrentPage = 1;
+                mCurrentPage = mPageForRefresh;
             } else {
-                mCurrentPage = 0;
+                mCurrentPage = mPageForRefresh - 1;
             }
         }
     }
