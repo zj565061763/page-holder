@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.sd.lib.holder.page.FPageHolder;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
                 .setHasData(false)
                 .update();
         assert holder.getCurrentPage() == 0;
-        assert holder.getPageForRefresh() == 1;
         assert holder.getPageForLoadMore() == 1;
         assert holder.hasNextPage();
 
@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
                 .setHasData(false)
                 .update();
         assert holder.getCurrentPage() == 0;
-        assert holder.getPageForRefresh() == 1;
         assert holder.getPageForLoadMore() == 1;
         assert !holder.hasNextPage();
 
@@ -55,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
                 .setHasData(true)
                 .update();
         assert holder.getCurrentPage() == 1;
-        assert holder.getPageForRefresh() == 1;
         assert holder.getPageForLoadMore() == 2;
 
 
@@ -65,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
                 .setHasData(false)
                 .update();
         assert holder.getCurrentPage() == 0;
-        assert holder.getPageForRefresh() == 1;
         assert holder.getPageForLoadMore() == 1;
 
 
@@ -75,7 +72,28 @@ public class MainActivity extends AppCompatActivity {
                 .setHasData(new ArrayList<>())
                 .update();
         assert holder.getCurrentPage() == 0;
-        assert holder.getPageForRefresh() == 1;
         assert holder.getPageForLoadMore() == 1;
+
+
+        // test setHasData(Collection)
+        final List<String> list1 = new ArrayList<>();
+        list1.add("");
+        holder.onSuccess(false)
+                .setHasNextPage(true)
+                .setHasData(list1)
+                .update();
+        assert holder.getCurrentPage() == 1;
+        assert holder.getPageForLoadMore() == 2;
+
+
+        // test setHasData(Collection)
+        final List<String> list2 = new ArrayList<>();
+        list2.add("");
+        holder.onSuccess(false)
+                .setHasNextPage(true)
+                .setHasData(list2)
+                .update();
+        assert holder.getCurrentPage() == 1;
+        assert holder.getPageForLoadMore() == 2;
     }
 }
