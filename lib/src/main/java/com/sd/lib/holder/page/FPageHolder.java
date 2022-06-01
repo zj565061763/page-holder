@@ -110,9 +110,12 @@ public class FPageHolder {
     }
 
     public final class ResultUpdater {
-        Boolean _isLoadMore = null;
+        private Boolean _isLoadMore = null;
         private Boolean _hasNextPage = null;
         private Boolean _hasData = null;
+
+        ResultUpdater() {
+        }
 
         /**
          * 设置是否有下一页
