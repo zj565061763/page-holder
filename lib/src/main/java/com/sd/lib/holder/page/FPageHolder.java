@@ -11,7 +11,7 @@ public class FPageHolder {
     /** 当前的page */
     private volatile int mCurrentPage;
     /** 是否有下一页数据 */
-    private boolean mHasNextPage = false;
+    private volatile boolean mHasNextPage = false;
 
     private volatile ResultUpdater mResultUpdater = null;
 
@@ -107,6 +107,10 @@ public class FPageHolder {
 
         // 重置为null
         mResultUpdater = null;
+        onUpdate();
+    }
+
+    protected void onUpdate() {
     }
 
     public final class ResultUpdater {
