@@ -47,7 +47,11 @@ public class FPageHolder {
         if (currentPage < minPage) {
             currentPage = minPage;
         }
-        mCurrentPage = currentPage;
+        if (mCurrentPage != currentPage) {
+            mCurrentPage = currentPage;
+            // 如果页码被直接修改，则重置为null
+            mResultUpdater = null;
+        }
     }
 
     /**
@@ -87,7 +91,7 @@ public class FPageHolder {
 
     private synchronized void updatePage(ResultUpdater updater) {
         if (mResultUpdater == null || mResultUpdater != updater) {
-            throw new RuntimeException("You should call onSuccess() before this.");
+            return;
         }
 
         final Boolean isLoadMore = updater._isLoadMore;
