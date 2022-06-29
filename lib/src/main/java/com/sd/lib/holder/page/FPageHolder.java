@@ -6,9 +6,12 @@ import java.util.Collection;
  * 分页逻辑封装
  */
 public class FPageHolder {
-    /** 刷新数据需要的page */
+    /** 刷新数据页码 */
     private final int mPageForRefresh;
-    /** 当前的page */
+    /** 初始默认页码 */
+    private final int mPageDefault;
+
+    /** 当前页码 */
     private volatile int mCurrentPage;
     /** 是否有下一页数据 */
     private volatile boolean mHasNextPage = false;
@@ -22,7 +25,8 @@ public class FPageHolder {
     public FPageHolder(int pageForRefresh) {
         assert Integer.MIN_VALUE != pageForRefresh;
         mPageForRefresh = pageForRefresh;
-        mCurrentPage = pageForRefresh - 1;
+        mPageDefault = pageForRefresh - 1;
+        mCurrentPage = mPageDefault;
     }
 
     /**
@@ -99,19 +103,21 @@ public class FPageHolder {
             setCurrentPage(page);
         } else {
             if (isLoadMore) {
+                // load more
                 if (hasData) {
-                    mCurrentPage++;
+                    setCurrentPage(mCurrentPage + 1);
                 }
             } else {
+                // refresh
                 if (hasData) {
-                    mCurrentPage = mPageForRefresh;
+                    setCurrentPage(mPageForRefresh);
                 } else {
-                    mCurrentPage = mPageForRefresh - 1;
+                    setCurrentPage(mPageDefault);
                 }
             }
         }
 
-        // 重置为null
+        // 重置
         mResultUpdater = null;
         onUpdate();
     }
@@ -120,9 +126,8 @@ public class FPageHolder {
      * 设置当前页码
      */
     private void setCurrentPage(int page) {
-        final int minPage = mPageForRefresh - 1;
-        if (page < minPage) {
-            page = minPage;
+        if (page < mPageDefault) {
+            page = mPageDefault;
         }
         if (mCurrentPage != page) {
             mCurrentPage = page;
