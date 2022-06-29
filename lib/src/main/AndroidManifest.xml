@@ -1,2 +1,1 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sd.lib.holder.page" />
+<manifest package="com.sd.lib.holder.page" />
