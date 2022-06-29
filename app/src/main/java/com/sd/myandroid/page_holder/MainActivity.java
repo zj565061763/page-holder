@@ -28,6 +28,15 @@ public class MainActivity extends AppCompatActivity {
         assert holder.getPageForRefresh() == 1;
         assert holder.getPageForLoadMore() == 1;
         assert !holder.hasNextPage();
+
+        final FPageHolder.ResultUpdater updater = holder.onSuccess(false)
+                .setHasNextPage(true)
+                .setHasData(true);
+
+        holder.setCurrentPage(10);
+        updater.update();
+
+        assert holder.getCurrentPage() == 10;
     }
 
     private void testRefresh() {
