@@ -29,12 +29,9 @@ public class MainActivity extends AppCompatActivity {
         assert holder.getPageForLoadMore() == 1;
         assert !holder.hasNextPage();
 
-        final FPageHolder.ResultUpdater updater = holder.onSuccess(false)
-                .setHasNextPage(true)
-                .setHasData(true);
-
-        holder.setCurrentPage(10);
-        updater.update();
+        holder.onSuccess(false)
+                .setPage(10)
+                .update();
 
         assert holder.getCurrentPage() == 10;
     }

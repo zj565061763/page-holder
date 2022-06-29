@@ -40,21 +40,6 @@ public class FPageHolder {
     }
 
     /**
-     * 设置当前页码
-     */
-    public synchronized void setCurrentPage(int currentPage) {
-        final int minPage = mPageForRefresh - 1;
-        if (currentPage < minPage) {
-            currentPage = minPage;
-        }
-        if (mCurrentPage != currentPage) {
-            mCurrentPage = currentPage;
-            // 如果页码被直接修改，则重置为null
-            mResultUpdater = null;
-        }
-    }
-
-    /**
      * 返回刷新数据需要的page
      */
     public int getPageForRefresh() {
@@ -108,21 +93,40 @@ public class FPageHolder {
         }
 
         mHasNextPage = hasNextPage;
-        if (isLoadMore) {
-            if (hasData) {
-                mCurrentPage++;
-            }
+
+        final Integer page = updater._page;
+        if (page != null) {
+            setCurrentPage(page);
         } else {
-            if (hasData) {
-                mCurrentPage = mPageForRefresh;
+            if (isLoadMore) {
+                if (hasData) {
+                    mCurrentPage++;
+                }
             } else {
-                mCurrentPage = mPageForRefresh - 1;
+                if (hasData) {
+                    mCurrentPage = mPageForRefresh;
+                } else {
+                    mCurrentPage = mPageForRefresh - 1;
+                }
             }
         }
 
         // 重置为null
         mResultUpdater = null;
         onUpdate();
+    }
+
+    /**
+     * 设置当前页码
+     */
+    private void setCurrentPage(int page) {
+        final int minPage = mPageForRefresh - 1;
+        if (page < minPage) {
+            page = minPage;
+        }
+        if (mCurrentPage != page) {
+            mCurrentPage = page;
+        }
     }
 
     protected void onUpdate() {
@@ -132,6 +136,7 @@ public class FPageHolder {
         private Boolean _isLoadMore = null;
         private Boolean _hasNextPage = null;
         private Boolean _hasData = null;
+        private Integer _page = null;
 
         ResultUpdater() {
         }
@@ -161,6 +166,14 @@ public class FPageHolder {
          */
         public ResultUpdater setHasData(Collection<?> data) {
             setHasData(data != null && data.size() > 0);
+            return this;
+        }
+
+        /**
+         * 设置页码
+         */
+        public ResultUpdater setPage(Integer page) {
+            this._page = page;
             return this;
         }
 
