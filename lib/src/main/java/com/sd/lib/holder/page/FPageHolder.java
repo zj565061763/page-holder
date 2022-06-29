@@ -33,10 +33,21 @@ public class FPageHolder {
     }
 
     /**
-     * 返回当前的页数
+     * 返回当前的页码
      */
     public int getCurrentPage() {
         return mCurrentPage;
+    }
+
+    /**
+     * 设置当前页码
+     */
+    public synchronized void setCurrentPage(int currentPage) {
+        final int minPage = mPageForRefresh - 1;
+        if (currentPage < minPage) {
+            currentPage = minPage;
+        }
+        mCurrentPage = currentPage;
     }
 
     /**
