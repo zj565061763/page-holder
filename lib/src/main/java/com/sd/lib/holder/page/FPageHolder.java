@@ -26,7 +26,7 @@ public class FPageHolder {
         assert Integer.MIN_VALUE != pageForRefresh;
         mPageForRefresh = pageForRefresh;
         mPageDefault = pageForRefresh - 1;
-        mCurrentPage = mPageDefault;
+        setCurrentPage(mPageDefault);
     }
 
     /**
