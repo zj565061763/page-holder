@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
         assert !holder.hasNextPage();
 
         holder.onSuccess(false)
+                .setHasNextPage(true)
+                .setHasData(true)
                 .setPage(10)
                 .update();
 
