@@ -8,6 +8,7 @@ def libArtifactId = "page-holder"
 def libVersionName = "1.0.0-rc04"
 
 android {
+    namespace 'com.sd.lib.holder.page'
     compileSdk 32
     defaultConfig {
         minSdk 19

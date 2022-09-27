@@ -1,4 +1,4 @@
-package com.sd.myandroid.page_holder;
+package com.sd.demo.page_holder;
 
 import android.os.Bundle;
 
