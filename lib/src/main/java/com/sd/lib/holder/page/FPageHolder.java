@@ -16,7 +16,7 @@ public class FPageHolder {
     /** 是否有下一页数据 */
     private volatile boolean mHasNextPage = false;
 
-    private volatile ResultUpdater mResultUpdater = null;
+    private ResultUpdater mResultUpdater = null;
 
     public FPageHolder() {
         this(1);
@@ -53,7 +53,7 @@ public class FPageHolder {
     /**
      * 返回刷新数据需要的page
      */
-    public int getPageForRefresh() {
+    public synchronized int getPageForRefresh() {
         checkUpdater();
         return mPageForRefresh;
     }
@@ -61,7 +61,7 @@ public class FPageHolder {
     /**
      * 返回下一页数据需要的page
      */
-    public int getPageForLoadMore() {
+    public synchronized int getPageForLoadMore() {
         checkUpdater();
         return mCurrentPage + 1;
     }
@@ -78,10 +78,7 @@ public class FPageHolder {
      * @param isLoadMore 是否加载更多
      */
     public synchronized ResultUpdater onSuccess(boolean isLoadMore) {
-        if (mResultUpdater == null) {
-            mResultUpdater = new ResultUpdater();
-        }
-        mResultUpdater._isLoadMore = isLoadMore;
+        mResultUpdater = new ResultUpdater(isLoadMore);
         return mResultUpdater;
     }
 
@@ -89,9 +86,6 @@ public class FPageHolder {
         if (mResultUpdater == null || mResultUpdater != updater) {
             return;
         }
-
-        final Boolean isLoadMore = updater._isLoadMore;
-        assert isLoadMore != null;
 
         final Boolean hasNextPage = updater._hasNextPage;
         if (hasNextPage == null) {
@@ -109,7 +103,7 @@ public class FPageHolder {
         if (page != null) {
             setCurrentPage(page);
         } else {
-            if (isLoadMore) {
+            if (updater._isLoadMore) {
                 // load more
                 if (hasData) {
                     setCurrentPage(mCurrentPage + 1);
@@ -145,12 +139,13 @@ public class FPageHolder {
     }
 
     public final class ResultUpdater {
-        private Boolean _isLoadMore = null;
+        private final boolean _isLoadMore;
         private Boolean _hasNextPage = null;
         private Boolean _hasData = null;
         private Integer _page = null;
 
-        ResultUpdater() {
+        ResultUpdater(boolean isLoadMore) {
+            this._isLoadMore = isLoadMore;
         }
 
         /**
