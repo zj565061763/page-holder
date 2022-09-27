@@ -44,6 +44,13 @@ public class FPageHolder {
     }
 
     /**
+     * 返回请求数据需要的page
+     */
+    public int getPageForRequest(boolean isLoadMore) {
+        return isLoadMore ? getPageForLoadMore() : getPageForRefresh();
+    }
+
+    /**
      * 返回刷新数据需要的page
      */
     public int getPageForRefresh() {
