@@ -82,6 +82,15 @@ public class FPageHolder {
         return mResultUpdater;
     }
 
+    /**
+     * 重置
+     */
+    public synchronized void reset() {
+        mCurrentPage = mPageDefault;
+        mHasNextPage = false;
+        mResultUpdater = null;
+    }
+
     private synchronized void updatePage(ResultUpdater updater) {
         if (mResultUpdater == null || mResultUpdater != updater) {
             return;
