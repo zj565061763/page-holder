@@ -1,203 +1,168 @@
-package com.sd.lib.pholder;
-
-import java.util.Collection;
+package com.sd.lib.pholder
 
 /**
  * 分页逻辑封装
  */
-public class FPageHolder {
-    /** 刷新数据页码 */
-    private final int mPageForRefresh;
-    /** 初始默认页码 */
-    private final int mPageDefault;
+open class FPageHolder @JvmOverloads constructor(pageForRefresh: Int = 1) {
+    /** 刷新数据页码  */
+    private val _pageForRefresh: Int
+    /** 初始默认页码  */
+    private val _pageDefault: Int
 
-    /** 当前页码 */
-    private volatile int mCurrentPage;
-    /** 是否有下一页数据 */
-    private volatile boolean mHasNextPage = false;
+    /** 当前页码  */
+    private var _currentPage: Int
+    /** 是否有下一页数据  */
+    private var _hasNextPage = false
 
-    private ResultUpdater mResultUpdater = null;
+    private var _currentUpdater: ResultUpdater? = null
 
-    public FPageHolder() {
-        this(1);
-    }
-
-    public FPageHolder(int pageForRefresh) {
-        assert Integer.MIN_VALUE != pageForRefresh;
-        mPageForRefresh = pageForRefresh;
-        mPageDefault = pageForRefresh - 1;
-        mCurrentPage = mPageDefault;
+    init {
+        require(pageForRefresh != Int.MIN_VALUE)
+        _pageForRefresh = pageForRefresh
+        _pageDefault = pageForRefresh - 1
+        _currentPage = _pageDefault
     }
 
     /**
      * 是否有下一页数据
      */
-    public boolean hasNextPage() {
-        return mHasNextPage;
+    @Synchronized
+    fun hasNextPage(): Boolean {
+        return _hasNextPage
     }
 
     /**
      * 返回当前的页码
      */
-    public int getCurrentPage() {
-        return mCurrentPage;
+    @Synchronized
+    fun currentPage(): Int {
+        return _currentPage
     }
 
     /**
-     * 返回请求数据需要的page
+     * 返回刷新数据的页码
      */
-    public int getPageForRequest(boolean isLoadMore) {
-        return isLoadMore ? getPageForLoadMore() : getPageForRefresh();
+    @Synchronized
+    fun pageForRefresh(): Int {
+        check(_currentUpdater == null) { "You should update result before this." }
+        return _pageForRefresh
     }
 
     /**
-     * 返回刷新数据需要的page
+     * 返回获取下一页数据的页码
      */
-    public synchronized int getPageForRefresh() {
-        checkUpdater();
-        return mPageForRefresh;
+    @Synchronized
+    fun pageForLoadMore(): Int {
+        check(_currentUpdater == null) { "You should update result before this." }
+        return _currentPage + 1
     }
 
     /**
-     * 返回下一页数据需要的page
-     */
-    public synchronized int getPageForLoadMore() {
-        checkUpdater();
-        return mCurrentPage + 1;
-    }
-
-    private void checkUpdater() {
-        if (mResultUpdater != null) {
-            throw new RuntimeException("You should update result before this.");
-        }
-    }
-
-    /**
-     * 接口成功触发
-     *
+     * 接口成功时调用
      * @param isLoadMore 是否加载更多
      */
-    public synchronized ResultUpdater onSuccess(boolean isLoadMore) {
-        mResultUpdater = new ResultUpdater(isLoadMore);
-        return mResultUpdater;
+    @Synchronized
+    fun onSuccess(isLoadMore: Boolean): ResultUpdater {
+        return ResultUpdater(isLoadMore).also {
+            _currentUpdater = it
+        }
     }
 
     /**
      * 重置
      */
-    public synchronized void reset() {
-        mCurrentPage = mPageDefault;
-        mHasNextPage = false;
-        mResultUpdater = null;
+    @Synchronized
+    fun reset() {
+        _currentPage = _pageDefault
+        _hasNextPage = false
+        _currentUpdater = null
     }
 
-    private synchronized void updatePage(ResultUpdater updater) {
-        if (mResultUpdater == null || mResultUpdater != updater) {
-            return;
-        }
+    @Synchronized
+    private fun updatePage(updater: ResultUpdater) {
+        if (_currentUpdater !== updater) return
 
-        final Boolean hasNextPage = updater._hasNextPage;
-        if (hasNextPage == null) {
-            throw new RuntimeException("You should call ResultUpdater.setHasNextPage() before this.");
-        }
+        _hasNextPage = updater.hasNextPage ?: error("You should call ResultUpdater.setHasNextPage() before this.")
 
-        final Boolean hasData = updater._hasData;
-        if (hasData == null) {
-            throw new RuntimeException("You should call ResultUpdater.setHasData() before this.");
-        }
-
-        mHasNextPage = hasNextPage;
-
-        final Integer page = updater._page;
+        val page = updater.page
         if (page != null) {
-            setCurrentPage(page);
+            setCurrentPage(page)
         } else {
-            if (updater._isLoadMore) {
-                // load more
+            val hasData = updater.hasData ?: error("You should call ResultUpdater.setHasData() before this.")
+            if (updater.isLoadMore) {
                 if (hasData) {
-                    setCurrentPage(mCurrentPage + 1);
+                    setCurrentPage(_currentPage + 1)
                 }
             } else {
-                // refresh
                 if (hasData) {
-                    setCurrentPage(mPageForRefresh);
+                    setCurrentPage(_pageForRefresh)
                 } else {
-                    setCurrentPage(mPageDefault);
+                    setCurrentPage(_pageDefault)
                 }
             }
         }
 
         // 重置
-        mResultUpdater = null;
-        onUpdate();
+        _currentUpdater = null
+        onUpdate()
     }
 
-    /**
-     * 设置当前页码
-     */
-    private void setCurrentPage(int page) {
-        if (page < mPageDefault) {
-            page = mPageDefault;
-        }
-        if (mCurrentPage != page) {
-            mCurrentPage = page;
+    private fun setCurrentPage(page: Int) {
+        val legalPage = page.coerceAtLeast(_pageDefault)
+        if (_currentPage != legalPage) {
+            _currentPage = legalPage
         }
     }
 
-    protected void onUpdate() {
-    }
+    protected open fun onUpdate() {}
 
-    public final class ResultUpdater {
-        private final boolean _isLoadMore;
-        private Boolean _hasNextPage = null;
-        private Boolean _hasData = null;
-        private Integer _page = null;
+    inner class ResultUpdater internal constructor(
+        internal val isLoadMore: Boolean
+    ) {
+        internal var hasNextPage: Boolean? = null
+            private set
 
-        ResultUpdater(boolean isLoadMore) {
-            this._isLoadMore = isLoadMore;
-        }
+        internal var hasData: Boolean? = null
+            private set
+
+        internal var page: Int? = null
+            private set
 
         /**
          * 设置是否有下一页
-         *
          * @param hasNextPage true-是；false-否
          */
-        public ResultUpdater setHasNextPage(boolean hasNextPage) {
-            this._hasNextPage = hasNextPage;
-            return this;
+        fun setHasNextPage(hasNextPage: Boolean) = apply {
+            this.hasNextPage = hasNextPage
         }
 
         /**
          * 设置是否有返回数据
-         *
          * @param hasData true-是；false-否
          */
-        public ResultUpdater setHasData(boolean hasData) {
-            this._hasData = hasData;
-            return this;
+        fun setHasData(hasData: Boolean) = apply {
+            this.hasData = hasData
         }
 
         /**
          * 设置是否有返回数据
          */
-        public ResultUpdater setHasData(Collection<?> data) {
-            setHasData(data != null && data.size() > 0);
-            return this;
+        fun setHasData(data: Collection<*>?) = apply {
+            setHasData(data?.isNotEmpty() == true)
         }
 
         /**
          * 设置页码
          */
-        public ResultUpdater setPage(Integer page) {
-            this._page = page;
-            return this;
+        fun setPage(page: Int?) = apply {
+            this.page = page
         }
 
         /**
          * 更新page
          */
-        public void update() {
-            updatePage(this);
+        fun update() {
+            updatePage(this)
         }
     }
 }

@@ -18,9 +18,9 @@ class ExampleInstrumentedTest {
     fun testInit() {
         val holder = FPageHolder()
 
-        assertEquals(0, holder.currentPage)
-        assertEquals(1, holder.pageForRefresh)
-        assertEquals(1, holder.pageForLoadMore)
+        assertEquals(0, holder.currentPage())
+        assertEquals(1, holder.pageForRefresh())
+        assertEquals(1, holder.pageForLoadMore())
         assertEquals(false, holder.hasNextPage())
 
         holder.onSuccess(false)
@@ -29,7 +29,7 @@ class ExampleInstrumentedTest {
             .setPage(10)
             .update()
 
-        assertEquals(10, holder.currentPage)
+        assertEquals(10, holder.currentPage())
     }
 
     @Test
@@ -58,7 +58,7 @@ class ExampleInstrumentedTest {
             .setHasNextPage(true)
             .setHasData(true)
             .update()
-        assertEquals(1, holder.currentPage)
+        assertEquals(1, holder.currentPage())
 
 
         // test setHasData(false)
@@ -66,7 +66,7 @@ class ExampleInstrumentedTest {
             .setHasNextPage(true)
             .setHasData(false)
             .update()
-        assertEquals(0, holder.currentPage)
+        assertEquals(0, holder.currentPage())
 
 
         // test setHasData(Collection)
@@ -74,7 +74,7 @@ class ExampleInstrumentedTest {
             .setHasNextPage(true)
             .setHasData(emptyList<Any?>())
             .update()
-        assertEquals(0, holder.currentPage)
+        assertEquals(0, holder.currentPage())
 
 
         // test setHasData(Collection)
@@ -82,7 +82,7 @@ class ExampleInstrumentedTest {
             .setHasNextPage(true)
             .setHasData(listOf(""))
             .update()
-        assertEquals(1, holder.currentPage)
+        assertEquals(1, holder.currentPage())
 
 
         // test setHasData(Collection)
@@ -90,7 +90,7 @@ class ExampleInstrumentedTest {
             .setHasNextPage(true)
             .setHasData(listOf(""))
             .update()
-        assertEquals(1, holder.currentPage)
+        assertEquals(1, holder.currentPage())
     }
 
     @Test
@@ -119,7 +119,7 @@ class ExampleInstrumentedTest {
             .setHasNextPage(true)
             .setHasData(true)
             .update()
-        assertEquals(1, holder.currentPage)
+        assertEquals(1, holder.currentPage())
 
 
         // test setHasData(false)
@@ -127,7 +127,7 @@ class ExampleInstrumentedTest {
             .setHasNextPage(true)
             .setHasData(false)
             .update()
-        assertEquals(1, holder.currentPage)
+        assertEquals(1, holder.currentPage())
 
 
         // test setHasData(Collection)
@@ -135,7 +135,7 @@ class ExampleInstrumentedTest {
             .setHasNextPage(true)
             .setHasData(emptyList<Any?>())
             .update()
-        assertEquals(1, holder.currentPage)
+        assertEquals(1, holder.currentPage())
 
 
         // test setHasData(Collection)
@@ -143,7 +143,7 @@ class ExampleInstrumentedTest {
             .setHasNextPage(true)
             .setHasData(listOf(""))
             .update()
-        assertEquals(2, holder.currentPage)
+        assertEquals(2, holder.currentPage())
 
 
         // test setHasData(Collection)
@@ -151,6 +151,6 @@ class ExampleInstrumentedTest {
             .setHasNextPage(true)
             .setHasData(listOf(""))
             .update()
-        assertEquals(3, holder.currentPage)
+        assertEquals(3, holder.currentPage())
     }
 }
