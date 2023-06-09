@@ -5,12 +5,16 @@ pluginManagement {
         mavenCentral()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
+        maven("https://jitpack.io")
     }
 }
-rootProject.name='page-holder'
-include ':app', ':lib'
+
+rootProject.name = "page-holder"
+include(":app")
+include(":lib")

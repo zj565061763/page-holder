@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.sd.lib.holder.page.FPageHolder;
+import com.sd.lib.pholder.FPageHolder;
 
 import java.util.ArrayList;
 import java.util.List;
