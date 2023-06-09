@@ -6,7 +6,7 @@ plugins {
 
 val libGroupId = "com.sd.lib.android"
 val libArtifactId = "page-holder"
-val libVersionName = "1.0.0-rc06"
+val libVersionName = "1.1.0-rc01"
 
 android {
     namespace = "com.sd.lib.pholder"
