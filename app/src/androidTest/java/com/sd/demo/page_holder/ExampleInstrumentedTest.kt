@@ -92,4 +92,65 @@ class ExampleInstrumentedTest {
             .update()
         assertEquals(1, holder.currentPage)
     }
+
+    @Test
+    fun testLoadMore() {
+        val holder = FPageHolder()
+
+
+        // test setHasNextPage(true)
+        holder.onSuccess(true)
+            .setHasNextPage(true)
+            .setHasData(false)
+            .update()
+        assertEquals(true, holder.hasNextPage())
+
+
+        // test setHasNextPage(false)
+        holder.onSuccess(true)
+            .setHasNextPage(false)
+            .setHasData(false)
+            .update()
+        assertEquals(false, holder.hasNextPage())
+
+
+        // test setHasData(true)
+        holder.onSuccess(true)
+            .setHasNextPage(true)
+            .setHasData(true)
+            .update()
+        assertEquals(1, holder.currentPage)
+
+
+        // test setHasData(false)
+        holder.onSuccess(true)
+            .setHasNextPage(true)
+            .setHasData(false)
+            .update()
+        assertEquals(1, holder.currentPage)
+
+
+        // test setHasData(Collection)
+        holder.onSuccess(true)
+            .setHasNextPage(true)
+            .setHasData(emptyList<Any?>())
+            .update()
+        assertEquals(1, holder.currentPage)
+
+
+        // test setHasData(Collection)
+        holder.onSuccess(true)
+            .setHasNextPage(true)
+            .setHasData(listOf(""))
+            .update()
+        assertEquals(2, holder.currentPage)
+
+
+        // test setHasData(Collection)
+        holder.onSuccess(true)
+            .setHasNextPage(true)
+            .setHasData(listOf(""))
+            .update()
+        assertEquals(3, holder.currentPage)
+    }
 }
