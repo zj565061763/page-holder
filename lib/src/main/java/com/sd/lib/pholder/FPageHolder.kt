@@ -3,7 +3,9 @@ package com.sd.lib.pholder
 /**
  * 分页逻辑封装
  */
-open class FPageHolder @JvmOverloads constructor(pageForRefresh: Int = 1) {
+open class FPageHolder @JvmOverloads constructor(
+    pageForRefresh: Int = 1,
+) {
     /** 刷新数据页码  */
     private val _pageForRefresh: Int
     /** 初始默认页码  */
@@ -117,7 +119,7 @@ open class FPageHolder @JvmOverloads constructor(pageForRefresh: Int = 1) {
     protected open fun onUpdate() {}
 
     inner class ResultUpdater internal constructor(
-        internal val isLoadMore: Boolean
+        internal val isLoadMore: Boolean,
     ) {
         internal var hasNextPage: Boolean? = null
             private set
