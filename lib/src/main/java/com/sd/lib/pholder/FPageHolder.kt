@@ -145,16 +145,16 @@ open class FPageHolder @JvmOverloads constructor(
         }
 
         /**
-         * 设置是否有返回数据
+         * 本次请求，是否有返回数据
          */
         fun setHasData(data: Collection<*>?) = apply {
             setHasData(data?.isNotEmpty() == true)
         }
 
         /**
-         * 设置页码
+         * 把页码更新为[page]
          */
-        fun setPage(page: Int?) = apply {
+        fun setPage(page: Int) = apply {
             this.page = page
         }
 
