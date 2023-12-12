@@ -46,7 +46,6 @@ open class FPageHolder @JvmOverloads constructor(
      */
     @Synchronized
     fun pageForRefresh(): Int {
-        check(_currentUpdater == null) { "You should update result before this." }
         return _pageForRefresh
     }
 
@@ -55,7 +54,6 @@ open class FPageHolder @JvmOverloads constructor(
      */
     @Synchronized
     fun pageForLoadMore(): Int {
-        check(_currentUpdater == null) { "You should update result before this." }
         return _currentPage + 1
     }
 
