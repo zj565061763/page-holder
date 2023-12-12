@@ -114,6 +114,9 @@ open class FPageHolder @JvmOverloads constructor(
         }
     }
 
+    /**
+     * [onSuccess]返回的对象触发[ResultUpdater.update]更新后，回调此方法
+     */
     protected open fun onUpdate() {}
 
     inner class ResultUpdater internal constructor(
