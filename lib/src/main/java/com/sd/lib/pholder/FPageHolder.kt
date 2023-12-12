@@ -129,7 +129,7 @@ open class FPageHolder @JvmOverloads constructor(
             private set
 
         /**
-         * 设置是否有下一页
+         * 是否有下一页
          * @param hasNextPage true-是；false-否
          */
         fun setHasNextPage(hasNextPage: Boolean) = apply {
@@ -137,7 +137,7 @@ open class FPageHolder @JvmOverloads constructor(
         }
 
         /**
-         * 设置是否有返回数据
+         * 本次请求，是否有返回数据
          * @param hasData true-是；false-否
          */
         fun setHasData(hasData: Boolean) = apply {
